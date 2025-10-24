@@ -1,0 +1,79 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Supabase usa postgresql
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Armazenar hash
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model Product {
+  id            String     @id @default(cuid())
+  name          String
+  description   String
+  price         Float
+  hasDiscount   Boolean    @default(false)
+  discountPrice Float?
+  images        String[]   // Array de URLs PÚBLICAS do Supabase Storage
+  isAvailable   Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  OrderItems    OrderItem[]
+}
+
+model Order {
+  id            String        @id @default(cuid())
+  status        OrderStatus   @default(PENDING)
+  paymentMethod PaymentMethod
+  total         Float
+  createdAt     DateTime      @default(now())
+  items         OrderItem[]
+  customerName  String?
+  customerPhone String?
+}
+
+model OrderItem {
+  id              String  @id @default(cuid())
+  order           Order   @relation(fields: [orderId], references: [id])
+  orderId         String
+  product         Product @relation(fields: [productId], references: [id])
+  productId       String
+  quantity        Int
+  priceAtPurchase Float
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  message   String
+  isRead    Boolean  @default(false)
+  orderId   String?
+  createdAt DateTime @default(now())
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+enum PaymentMethod {
+  MERCADO_PAGO
+  WHATSAPP
+}
