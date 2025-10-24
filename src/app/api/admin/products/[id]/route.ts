@@ -15,13 +15,15 @@ async function requireAdmin() {
   return null;
 }
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, context: any) {
+  const { params } = context;
   const { data, error } = await supabase.from("Product").select("*").eq("id", params.id).single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ product: data }, { status: 200 });
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, context: any) {
+  const { params } = context;
   const unauthorized = await requireAdmin();
   if (unauthorized) return unauthorized;
 
@@ -40,7 +42,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json({ product: data }, { status: 200 });
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, context: any) {
+  const { params } = context;
   const unauthorized = await requireAdmin();
   if (unauthorized) return unauthorized;
 

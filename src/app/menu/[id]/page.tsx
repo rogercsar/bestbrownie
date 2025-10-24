@@ -13,7 +13,7 @@ export default function MenuDetailPage() {
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const res = await fetch(`/api/admin/products/${id}`);
+      const res = await fetch(`/api/products/${id}`);
       const json = await res.json();
       setProduct(json.product);
       setLoading(false);
